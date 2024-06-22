@@ -12,6 +12,6 @@ type Provider struct {
 
 func New(cfg config.Config, provider *service.Provider) (*Provider, error) {
 	return &Provider{
-		MR: mr.New(cfg.Repo, provider.Git, provider.Gitlab),
+		MR: mr.New(cfg.Repo, provider.Git, provider.Gitlab, provider.YTracker),
 	}, nil
 }

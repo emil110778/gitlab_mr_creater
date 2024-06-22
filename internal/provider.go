@@ -17,7 +17,7 @@ func New(cfg config.Config) (provider *usecase.Provider, err error) {
 	if err != nil {
 		return provider, err
 	}
-	serviceProvider := service.New(cfg, drivenProvider)
+	serviceProvider, err := service.New(cfg, drivenProvider)
 	if err != nil {
 		return provider, err
 	}

@@ -5,16 +5,23 @@ import (
 	"github.com/emil110778/gitlab_mr_creator/internal/config"
 	"github.com/emil110778/gitlab_mr_creator/internal/service/git"
 	"github.com/emil110778/gitlab_mr_creator/internal/service/gitlab"
+	ytracker "github.com/emil110778/gitlab_mr_creator/internal/service/y_tracker"
 )
 
 type Provider struct {
-	Git    *git.Service
-	Gitlab *gitlab.Service
+	Git      *git.Service
+	Gitlab   *gitlab.Service
+	YTracker *ytracker.Service
 }
 
-func New(_ config.Config, provider adapter.Provider) *Provider {
-	return &Provider{
-		Git:    git.New(),
-		Gitlab: gitlab.New(provider.HTTP.Gitlab.MR, provider.HTTP.Gitlab.Project),
+func New(_ config.Config, provider adapter.Provider) (*Provider, error) {
+	gitService, err := git.New()
+	if err != nil {
+		return nil, err
 	}
+	return &Provider{
+		Git:      gitService,
+		Gitlab:   gitlab.New(provider.HTTP.Gitlab.MR, provider.HTTP.Gitlab.Project),
+		YTracker: ytracker.New(provider.HTTP.YTracker),
+	}, nil
 }

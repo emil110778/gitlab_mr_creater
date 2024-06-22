@@ -21,3 +21,12 @@ func (service *Service) GetCurrentBrunch() (brunch string, err error) {
 	}
 	return strings.TrimPrefix(string(h.Name()), "refs/heads/"), nil
 }
+
+func (service *Service) GetTicketFromBrunch(brunch string) (string, error) {
+	keyWithDelim := service.regExpTaskKeyWithDelim.FindString(brunch)
+	key := service.regExpTaskKey.FindString(keyWithDelim)
+	if key == "" {
+		return "", fmt.Errorf("ticket not found in brunch name %s", brunch)
+	}
+	return key, nil
+}
