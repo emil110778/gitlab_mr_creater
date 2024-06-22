@@ -6,23 +6,17 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
-	"net/url"
-	"regexp"
-	"strings"
+	"strconv"
 
+	tracker "github.com/dvsnin/yandex-tracker-go"
+	configcmd "github.com/emil110778/gitlab_mr_creator/create_mr/cmd/config"
 	"github.com/emil110778/gitlab_mr_creator/internal/config"
-	"github.com/manifoldco/promptui"
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/xanzy/go-gitlab"
-)
-
-const (
-	defaultGitlabHost = "https://gitlab.com"
-	defaultMainBrunch = "main"
-	branchesDelim     = ","
 )
 
 // configureCmd represents the configure command
@@ -37,12 +31,12 @@ yandex tracker credentials
 	RunE: func(cmd *cobra.Command, args []string) error {
 		currentCfg := config.NewWithoutValidate()
 
-		host, err := getHost(currentCfg.HTTP.Gitlab.Host)
+		host, err := configcmd.GitlabGetHost(currentCfg.HTTP.Gitlab.Host)
 		if err != nil {
 			return err
 		}
 
-		token, err := getToken(currentCfg.HTTP.Gitlab.Token)
+		token, err := configcmd.GitlabGetToken(currentCfg.HTTP.Gitlab.Token)
 		if err != nil {
 			return err
 		}
@@ -51,22 +45,41 @@ yandex tracker credentials
 		if err != nil {
 			return err
 		}
-		version, resp, err := client.Version.GetVersion()
+		_, resp, err := client.Version.GetVersion()
 		if err != nil {
 			if resp.StatusCode == http.StatusUnauthorized {
-				return fmt.Errorf("authorization error: %w", err)
+				slog.Error("gitlab authorization error", err)
+				return errors.New("gitlab authorization error")
 			}
 			return err
 		}
 
-		fmt.Println("your Gitlab version: ", version)
-
-		mainBrunch, err := getMainBrunch(currentCfg.Repo.MainBrunch)
+		yTrackerOrgID, err := configcmd.YTrackerGetOrgID(currentCfg.HTTP.YTracker.OrgID)
 		if err != nil {
 			return err
 		}
 
-		additionalBrunches, err := getAdditionalBrunch(currentCfg.Repo.AdditionalBrunches)
+		yTrackerToken, err := configcmd.YTrackerGetToken(currentCfg.HTTP.YTracker.Token)
+		if err != nil {
+			return err
+		}
+
+		yTrackerClient := tracker.New("OAuth "+yTrackerToken, strconv.Itoa(yTrackerOrgID), "")
+		_, err = yTrackerClient.Myself()
+		if err != nil {
+			if resp.StatusCode == http.StatusUnauthorized {
+				slog.Error("yandex tracker authorization error", err)
+				return errors.New("yandex tracker authorization error")
+			}
+			return err
+		}
+
+		mainBrunch, err := configcmd.GetMainBrunch(currentCfg.Repo.MainBrunch)
+		if err != nil {
+			return err
+		}
+
+		additionalBrunches, err := configcmd.GetAdditionalBrunch(currentCfg.Repo.AdditionalBrunches)
 		if err != nil {
 			return err
 		}
@@ -76,6 +89,10 @@ yandex tracker credentials
 				Gitlab: config.Gitlab{
 					Host:  host,
 					Token: token,
+				},
+				YTracker: config.YTracker{
+					Token: yTrackerToken,
+					OrgID: yTrackerOrgID,
 				},
 			},
 			Repo: config.Repo{
@@ -121,98 +138,4 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// configureCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-}
-
-func getHost(defaultVal string) (string, error) {
-	validate := func(input string) error {
-		_, err := url.Parse(input)
-		if err != nil {
-			return fmt.Errorf("invalid url: %w", err)
-		}
-		return nil
-	}
-
-	if defaultVal == "" {
-		defaultVal = defaultGitlabHost
-	}
-
-	prompt := promptui.Prompt{
-		Label:     "Gitlab host:",
-		Default:   defaultVal,
-		Validate:  validate,
-		AllowEdit: true,
-	}
-
-	host, err := prompt.Run()
-
-	return host, err
-}
-
-func getToken(defaultVal string) (string, error) {
-	validate := func(input string) error {
-		validateRegexp := "[0-9a-zA-Z\\-]{20}"
-		matched, err := regexp.MatchString(validateRegexp, input)
-		if err != nil {
-			return fmt.Errorf("validate error: %w", err)
-		}
-		if !matched {
-			return fmt.Errorf("invalid token format, shuld be: %s", validateRegexp)
-		}
-		return nil
-	}
-
-	prompt := promptui.Prompt{
-		Label:     "Gitlab token:",
-		Default:   defaultVal,
-		Mask:      '*',
-		Validate:  validate,
-		AllowEdit: true,
-	}
-
-	token, err := prompt.Run()
-
-	return token, err
-}
-
-func getMainBrunch(defaultVal string) (string, error) {
-	validate := func(input string) error {
-		if input == "" {
-			return errors.New("empty brunch")
-		}
-		return nil
-	}
-
-	if defaultVal == "" {
-		defaultVal = defaultMainBrunch
-	}
-
-	prompt := promptui.Prompt{
-		Label:     "Main brunch:",
-		Default:   defaultVal,
-		Validate:  validate,
-		AllowEdit: true,
-	}
-
-	host, err := prompt.Run()
-
-	return host, err
-}
-
-func getAdditionalBrunch(defaultVal []string) ([]string, error) {
-	prompt := promptui.Prompt{
-		Label:     fmt.Sprintf("Additional brunches (a%sb%sc):", branchesDelim, branchesDelim),
-		Default:   strings.Join(defaultVal, branchesDelim),
-		AllowEdit: true,
-	}
-
-	brunches, err := prompt.Run()
-	if err != nil {
-		return nil, err
-	}
-
-	if brunches == "" {
-		return nil, nil
-	}
-
-	return strings.Split(brunches, branchesDelim), err
 }
