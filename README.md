@@ -1,1 +1,1 @@
-# gitlab_mr_creater
+# gitlab_mr_creator
