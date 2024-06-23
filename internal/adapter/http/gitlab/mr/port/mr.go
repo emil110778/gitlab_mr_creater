@@ -1,8 +1,8 @@
 package port
 
 import (
-	gitlabcore "github.com/emil110778/gitlab_mr_creator/internal/core/gitlab"
-	"github.com/emil110778/gitlab_mr_creator/pkg/helper"
+	gitlabcore "github.com/emildeev/gitlab_helper/internal/core/gitlab"
+	"github.com/emildeev/gitlab_helper/pkg/helper"
 	"github.com/xanzy/go-gitlab"
 )
 

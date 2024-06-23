@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/emil110778/gitlab_mr_creator/internal"
-	"github.com/emil110778/gitlab_mr_creator/internal/config"
-	gitlabcore "github.com/emil110778/gitlab_mr_creator/internal/core/gitlab"
+	"github.com/emildeev/gitlab_helper/internal"
+	"github.com/emildeev/gitlab_helper/internal/config"
+	gitlabcore "github.com/emildeev/gitlab_helper/internal/core/gitlab"
 	"github.com/spf13/cobra"
 )
 

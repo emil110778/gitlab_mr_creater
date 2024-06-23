@@ -3,10 +3,10 @@ package projecttemplate
 import (
 	"context"
 
-	"github.com/emil110778/gitlab_mr_creator/internal/adapter/http/gitlab/project_template/port"
-	"github.com/emil110778/gitlab_mr_creator/internal/adapter/http/gitlab/response"
-	gitlabcore "github.com/emil110778/gitlab_mr_creator/internal/core/gitlab"
-	httpcore "github.com/emil110778/gitlab_mr_creator/internal/core/http"
+	"github.com/emildeev/gitlab_helper/internal/adapter/http/gitlab/project_template/port"
+	"github.com/emildeev/gitlab_helper/internal/adapter/http/gitlab/response"
+	gitlabcore "github.com/emildeev/gitlab_helper/internal/core/gitlab"
+	httpcore "github.com/emildeev/gitlab_helper/internal/core/http"
 	"github.com/xanzy/go-gitlab"
 )
 

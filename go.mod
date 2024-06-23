@@ -1,4 +1,4 @@
-module github.com/emil110778/gitlab_mr_creator
+module github.com/emildeev/gitlab_helper
 
 go 1.22.3
 

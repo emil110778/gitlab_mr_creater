@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/emil110778/gitlab_mr_creator/internal/adapter/http/gitlab"
-	ytracker "github.com/emil110778/gitlab_mr_creator/internal/adapter/http/y_tracker"
-	httpconn "github.com/emil110778/gitlab_mr_creator/internal/connection/http"
+	"github.com/emildeev/gitlab_helper/internal/adapter/http/gitlab"
+	ytracker "github.com/emildeev/gitlab_helper/internal/adapter/http/y_tracker"
+	httpconn "github.com/emildeev/gitlab_helper/internal/connection/http"
 )
 
 type Provider struct {

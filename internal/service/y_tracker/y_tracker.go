@@ -1,6 +1,6 @@
 package ytracker
 
-import ytrackercore "github.com/emil110778/gitlab_mr_creator/internal/core/y_tracker"
+import ytrackercore "github.com/emildeev/gitlab_helper/internal/core/y_tracker"
 
 type adapterI interface {
 	GetTicket(ticketKey string) (ticket ytrackercore.Ticket, err error)

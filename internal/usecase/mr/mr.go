@@ -7,11 +7,11 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/emil110778/gitlab_mr_creator/internal/config"
-	gitlabcore "github.com/emil110778/gitlab_mr_creator/internal/core/gitlab"
-	httpcore "github.com/emil110778/gitlab_mr_creator/internal/core/http"
-	ytrackercore "github.com/emil110778/gitlab_mr_creator/internal/core/y_tracker"
-	"github.com/emil110778/gitlab_mr_creator/pkg/helper"
+	"github.com/emildeev/gitlab_helper/internal/config"
+	gitlabcore "github.com/emildeev/gitlab_helper/internal/core/gitlab"
+	httpcore "github.com/emildeev/gitlab_helper/internal/core/http"
+	ytrackercore "github.com/emildeev/gitlab_helper/internal/core/y_tracker"
+	"github.com/emildeev/gitlab_helper/pkg/helper"
 )
 
 type gitServiceI interface {

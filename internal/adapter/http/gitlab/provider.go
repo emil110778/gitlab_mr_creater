@@ -3,9 +3,9 @@ package gitlab
 import (
 	"errors"
 
-	"github.com/emil110778/gitlab_mr_creator/internal/adapter/http/gitlab/mr"
-	"github.com/emil110778/gitlab_mr_creator/internal/adapter/http/gitlab/project"
-	projecttemplate "github.com/emil110778/gitlab_mr_creator/internal/adapter/http/gitlab/project_template"
+	"github.com/emildeev/gitlab_helper/internal/adapter/http/gitlab/mr"
+	"github.com/emildeev/gitlab_helper/internal/adapter/http/gitlab/project"
+	projecttemplate "github.com/emildeev/gitlab_helper/internal/adapter/http/gitlab/project_template"
 	"github.com/xanzy/go-gitlab"
 )
 

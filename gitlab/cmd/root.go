@@ -10,7 +10,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/emil110778/gitlab_mr_creator/pkg/helper"
+	"github.com/emildeev/gitlab_helper/pkg/helper"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

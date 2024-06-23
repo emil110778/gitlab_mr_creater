@@ -1,8 +1,8 @@
 package ytracker
 
 import (
-	"github.com/emil110778/gitlab_mr_creator/internal/adapter/http/y_tracker/port"
-	ytrackercore "github.com/emil110778/gitlab_mr_creator/internal/core/y_tracker"
+	"github.com/emildeev/gitlab_helper/internal/adapter/http/y_tracker/port"
+	ytrackercore "github.com/emildeev/gitlab_helper/internal/core/y_tracker"
 )
 
 func (adapter *Adapter) GetTicket(ticketKey string) (ticket ytrackercore.Ticket, err error) {
