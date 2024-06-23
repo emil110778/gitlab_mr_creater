@@ -17,7 +17,9 @@ import (
 var createCmd = &cobra.Command{
 	Use:   "create",
 	Short: "Create merge requests",
-	Long:  `This command create merge request to prod and release (if set flag -release)`,
+	Long: `This command get required information from git and yandex tracker and ask addition information in cli for creating
+merge requests from current brunch to target main brunch (configured) and additional brunches (configured).
+After creating merge requests it will show links to created merge requests and will set it to ticket in yandex tracker`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := cmd.Context()
 
