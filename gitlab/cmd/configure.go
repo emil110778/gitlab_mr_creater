@@ -26,6 +26,7 @@ var configureCmd = &cobra.Command{
 	Long: `This command will configure environment for tool:
 gitlab credentials
 yandex tracker credentials
+and repository brunch configuration
 `,
 	SilenceErrors: false,
 	RunE: func(cmd *cobra.Command, args []string) error {
