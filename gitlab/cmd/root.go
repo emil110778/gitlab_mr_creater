@@ -5,6 +5,7 @@ package cmd
 
 import (
 	"fmt"
+	"io"
 	"log/slog"
 	"os"
 	"strings"
@@ -15,11 +16,7 @@ import (
 )
 
 const (
-	LogLevelInfo    = "info"
-	LogLevelWarning = "warning"
-	LogLevelError   = "error"
-	LogLevelDebug   = "debug"
-	DefaultLogLevel = LogLevelInfo
+	DefaultLogLevel = slog.LevelError
 	LogLevelLen     = 3
 )
 
@@ -53,12 +50,12 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 	logLevelUsage := fmt.Sprintf(
-		"set app log level (%s, %s, %s, %s) default is %s",
-		LogLevelError, LogLevelWarning, LogLevelInfo, LogLevelDebug, DefaultLogLevel,
+		"set app log level (%s, %s, %s, %s) default is off",
+		slog.LevelError.String(), slog.LevelWarn.String(), slog.LevelInfo.String(), slog.LevelDebug.String(),
 	)
 
 	rootCmd.PersistentFlags().StringP(
-		"log_level", "l", DefaultLogLevel, logLevelUsage,
+		"log_level", "l", "", logLevelUsage,
 	)
 }
 
@@ -81,22 +78,27 @@ func initConfig() {
 func InitLogger() {
 	logLevel, _ := rootCmd.PersistentFlags().GetString("log_level")
 	slog.SetLogLoggerLevel(getSlogLogLevel(logLevel))
+	if logLevel == "" {
+		logger := slog.New(slog.NewTextHandler(io.Discard, nil))
+		slog.SetDefault(logger)
+	}
+	slog.Error("test")
 }
 
 func getSlogLogLevel(strLevel string) slog.Level {
 	strLevel = makeLogLevelStr(strLevel)
 
 	switch strLevel {
-	case makeLogLevelStr(LogLevelInfo):
-		return slog.LevelInfo
-	case makeLogLevelStr(LogLevelWarning):
-		return slog.LevelWarn
-	case makeLogLevelStr(LogLevelError):
+	case makeLogLevelStr(slog.LevelError.String()):
 		return slog.LevelError
-	case makeLogLevelStr(LogLevelDebug):
+	case makeLogLevelStr(slog.LevelWarn.String()):
+		return slog.LevelWarn
+	case makeLogLevelStr(slog.LevelInfo.String()):
+		return slog.LevelInfo
+	case makeLogLevelStr(slog.LevelDebug.String()):
 		return slog.LevelDebug
 	default:
-		return getSlogLogLevel(DefaultLogLevel)
+		return DefaultLogLevel
 	}
 }
 
