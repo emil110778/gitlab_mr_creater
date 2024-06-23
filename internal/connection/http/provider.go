@@ -4,7 +4,7 @@ import (
 	"strconv"
 
 	tracker "github.com/dvsnin/yandex-tracker-go"
-	"github.com/emil110778/gitlab_mr_creator/internal/config"
+	"github.com/emildeev/gitlab_helper/internal/config"
 	"github.com/xanzy/go-gitlab"
 )
 

@@ -11,8 +11,8 @@ import (
 	"strconv"
 
 	tracker "github.com/dvsnin/yandex-tracker-go"
-	configcmd "github.com/emil110778/gitlab_mr_creator/gitlab/cmd/config"
-	"github.com/emil110778/gitlab_mr_creator/internal/config"
+	configcmd "github.com/emildeev/gitlab_helper/gitlab/cmd/config"
+	"github.com/emildeev/gitlab_helper/internal/config"
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

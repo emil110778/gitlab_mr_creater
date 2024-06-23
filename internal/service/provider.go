@@ -1,11 +1,11 @@
 package service
 
 import (
-	"github.com/emil110778/gitlab_mr_creator/internal/adapter"
-	"github.com/emil110778/gitlab_mr_creator/internal/config"
-	"github.com/emil110778/gitlab_mr_creator/internal/service/git"
-	"github.com/emil110778/gitlab_mr_creator/internal/service/gitlab"
-	ytracker "github.com/emil110778/gitlab_mr_creator/internal/service/y_tracker"
+	"github.com/emildeev/gitlab_helper/internal/adapter"
+	"github.com/emildeev/gitlab_helper/internal/config"
+	"github.com/emildeev/gitlab_helper/internal/service/git"
+	"github.com/emildeev/gitlab_helper/internal/service/gitlab"
+	ytracker "github.com/emildeev/gitlab_helper/internal/service/y_tracker"
 )
 
 type Provider struct {

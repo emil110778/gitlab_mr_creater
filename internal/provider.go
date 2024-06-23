@@ -1,11 +1,11 @@
 package internal
 
 import (
-	"github.com/emil110778/gitlab_mr_creator/internal/adapter"
-	"github.com/emil110778/gitlab_mr_creator/internal/config"
-	"github.com/emil110778/gitlab_mr_creator/internal/connection"
-	"github.com/emil110778/gitlab_mr_creator/internal/service"
-	"github.com/emil110778/gitlab_mr_creator/internal/usecase"
+	"github.com/emildeev/gitlab_helper/internal/adapter"
+	"github.com/emildeev/gitlab_helper/internal/config"
+	"github.com/emildeev/gitlab_helper/internal/connection"
+	"github.com/emildeev/gitlab_helper/internal/service"
+	"github.com/emildeev/gitlab_helper/internal/usecase"
 )
 
 func New(cfg config.Config) (provider *usecase.Provider, err error) {

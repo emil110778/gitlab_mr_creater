@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	gitlabcore "github.com/emil110778/gitlab_mr_creator/internal/core/gitlab"
+	gitlabcore "github.com/emildeev/gitlab_helper/internal/core/gitlab"
 )
 
 func (service *Service) CreateMR(ctx context.Context, mr gitlabcore.MRInfo) (url string, err error) {

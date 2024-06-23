@@ -1,8 +1,8 @@
 package connection
 
 import (
-	"github.com/emil110778/gitlab_mr_creator/internal/config"
-	httpconn "github.com/emil110778/gitlab_mr_creator/internal/connection/http"
+	"github.com/emildeev/gitlab_helper/internal/config"
+	httpconn "github.com/emildeev/gitlab_helper/internal/connection/http"
 )
 
 type Connection struct {

@@ -1,9 +1,9 @@
 package usecase
 
 import (
-	"github.com/emil110778/gitlab_mr_creator/internal/config"
-	"github.com/emil110778/gitlab_mr_creator/internal/service"
-	"github.com/emil110778/gitlab_mr_creator/internal/usecase/mr"
+	"github.com/emildeev/gitlab_helper/internal/config"
+	"github.com/emildeev/gitlab_helper/internal/service"
+	"github.com/emildeev/gitlab_helper/internal/usecase/mr"
 )
 
 type Provider struct {

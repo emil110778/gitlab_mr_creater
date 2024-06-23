@@ -1,6 +1,6 @@
 package port
 
-import ytrackercore "github.com/emil110778/gitlab_mr_creator/internal/core/y_tracker"
+import ytrackercore "github.com/emildeev/gitlab_helper/internal/core/y_tracker"
 
 func GetPatchTicketRequest(ticket ytrackercore.TicketPatch) map[string]string {
 	request := make(map[string]string)

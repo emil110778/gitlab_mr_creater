@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/emil110778/gitlab_mr_creator/internal/core"
-	gitlabcore "github.com/emil110778/gitlab_mr_creator/internal/core/gitlab"
+	"github.com/emildeev/gitlab_helper/internal/core"
+	gitlabcore "github.com/emildeev/gitlab_helper/internal/core/gitlab"
 )
 
 func (service *Service) GetProjectIDByURL(ctx context.Context, url string) (projectID gitlabcore.ProjectID, err error) {
