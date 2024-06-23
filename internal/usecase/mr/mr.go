@@ -23,6 +23,8 @@ type gitServiceI interface {
 type gitlabServiceI interface {
 	GetProjectIDByURL(ctx context.Context, url string) (projectID gitlabcore.ProjectID, err error)
 	CreateMR(ctx context.Context, mr gitlabcore.MRInfo) (url string, err error)
+	GetDefaultMRTemplateDescription(ctx context.Context, projectID gitlabcore.ProjectID) (description string, err error)
+	FillMRTemplateDescription(_ context.Context, description, tickerURL string) string
 }
 
 type yTrackerServiceI interface {
@@ -70,23 +72,33 @@ func (uc *UseCase) Create(ctx context.Context) (mrs []gitlabcore.CreatedMRInfo, 
 		return errorWrapper(err)
 	}
 
-	ticketKey, title, err := uc.getMRTitle(ctx, currentBrunch)
+	ticket, err := uc.getMRTitle(ctx, currentBrunch)
 	if err != nil {
 		slog.Warn("getMRTitle error: ", err)
 	}
-	if title == "" {
-		title = currentBrunch
+	var title string
+	if ticket.Key != "" && ticket.Title != "" {
+		title = fmt.Sprintf("%s: %s", ticket.Key, ticket.Title)
 	}
 
-	mrs, err = uc.createMRs(ctx, projectID, currentBrunch, title)
+	getMRTemplateDescription, err := uc.gitlabService.GetDefaultMRTemplateDescription(ctx, projectID)
+	if err != nil {
+		slog.Warn("GetDefaultMRTemplateDescription error: ", err)
+	}
+
+	if getMRTemplateDescription != "" {
+		getMRTemplateDescription = uc.gitlabService.FillMRTemplateDescription(ctx, getMRTemplateDescription, ticket.Key)
+	}
+
+	mrs, err = uc.createMRs(ctx, projectID, currentBrunch, title, getMRTemplateDescription)
 	if err != nil {
 		return errorWrapper(err)
 	}
 
-	if len(mrs) != 0 && ticketKey != "" {
+	if len(mrs) != 0 && title != "" {
 		for _, mr := range mrs {
 			if mr.Brunch == uc.cfg.MainBrunch && mr.URL != "" {
-				err = uc.yTrackerService.SetMR(ticketKey, mr.URL)
+				err = uc.yTrackerService.SetMR(ticket.Key, mr.URL)
 				if err != nil {
 					return errorWrapper(err)
 				}
@@ -98,11 +110,12 @@ func (uc *UseCase) Create(ctx context.Context) (mrs []gitlabcore.CreatedMRInfo, 
 }
 
 func (uc *UseCase) createMRs(
-	ctx context.Context, projectID gitlabcore.ProjectID, currentBrunch string, title string,
+	ctx context.Context, projectID gitlabcore.ProjectID, currentBrunch, title, mainDescription string,
 ) (mrs []gitlabcore.CreatedMRInfo, err error) {
 	mainMr := uc.createMR(ctx, projectID, currentBrunch, uc.cfg.MainBrunch, title, gitlabcore.MROptionalInfo{
 		Draft:                true,
 		ApprovalsBeforeMerge: helper.GetPointer(2),
+		Description:          helper.GetPointer(mainDescription),
 	})
 	mrs = append(mrs, mainMr)
 
@@ -116,16 +129,17 @@ func (uc *UseCase) createMRs(
 	return mrs, nil
 }
 
-func (uc *UseCase) getMRTitle(ctx context.Context, brunch string) (ticketKey, title string, err error) {
-	ticketKey, err = uc.gitService.GetTicketFromBrunch(brunch)
+func (uc *UseCase) getMRTitle(ctx context.Context, brunch string) (ticket ytrackercore.Ticket, err error) {
+	ticketKey, err := uc.gitService.GetTicketFromBrunch(brunch)
 	if err != nil {
-		return ticketKey, title, fmt.Errorf("getTaskTitle: %w", err)
+		return ticket, fmt.Errorf("getTaskTitle: %w", err)
 	}
-	ticket, err := uc.yTrackerService.GetTicket(ticketKey)
+	ticket, err = uc.yTrackerService.GetTicket(ticketKey)
 	if err != nil {
-		return ticketKey, title, fmt.Errorf("getTaskTitle: %w", err)
+		return ticket, fmt.Errorf("getTaskTitle: %w", err)
 	}
-	return ticketKey, fmt.Sprintf("%s: %s", ticket.Key, ticket.Title), nil
+
+	return ticket, nil
 }
 
 func (uc *UseCase) createMR(

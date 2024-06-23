@@ -29,15 +29,16 @@ func GetMRRequest(mr gitlabcore.MRInfo) gitlab.CreateMergeRequestOptions {
 	}
 
 	return gitlab.CreateMergeRequestOptions{
-		Title:              helper.GetPointer(mr.Title),
-		Description:        helper.CopyPointer(mr.Description),
-		SourceBranch:       helper.GetPointer(mr.SourceBranch),
-		TargetBranch:       helper.GetPointer(mr.TargetBranch),
-		AssigneeIDs:        assigneeIDs,
-		ReviewerIDs:        reviewerIDs,
-		TargetProjectID:    helper.GetPointer(int(mr.ProjectID)),
-		RemoveSourceBranch: helper.CopyPointer(mr.RemoveSourceBranch),
-		Squash:             helper.CopyPointer(mr.Squash),
+		Title:                helper.GetPointer(mr.Title),
+		Description:          helper.CopyPointer(mr.Description),
+		SourceBranch:         helper.GetPointer(mr.SourceBranch),
+		TargetBranch:         helper.GetPointer(mr.TargetBranch),
+		AssigneeIDs:          assigneeIDs,
+		ReviewerIDs:          reviewerIDs,
+		TargetProjectID:      helper.GetPointer(int(mr.ProjectID)),
+		RemoveSourceBranch:   helper.CopyPointer(mr.RemoveSourceBranch),
+		Squash:               helper.CopyPointer(mr.Squash),
+		ApprovalsBeforeMerge: helper.CopyPointer(mr.ApprovalsBeforeMerge),
 	}
 }
 

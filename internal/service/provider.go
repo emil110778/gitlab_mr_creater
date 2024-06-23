@@ -19,9 +19,15 @@ func New(_ config.Config, provider adapter.Provider) (*Provider, error) {
 	if err != nil {
 		return nil, err
 	}
+	gitLabService, err := gitlab.New(
+		provider.HTTP.Gitlab.MR, provider.HTTP.Gitlab.Project, provider.HTTP.Gitlab.ProjectTemplate,
+	)
+	if err != nil {
+		return nil, err
+	}
 	return &Provider{
 		Git:      gitService,
-		Gitlab:   gitlab.New(provider.HTTP.Gitlab.MR, provider.HTTP.Gitlab.Project),
+		Gitlab:   gitLabService,
 		YTracker: ytracker.New(provider.HTTP.YTracker),
 	}, nil
 }

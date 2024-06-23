@@ -2,7 +2,7 @@ package ytrackercore
 
 type Ticket struct {
 	Self        string `json:"self"`
-	Id          string `json:"id"`
+	ID          string `json:"id"`
 	Key         string `json:"key"`
 	Title       string `json:"title"`
 	Description string `json:"description"`

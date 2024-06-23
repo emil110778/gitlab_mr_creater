@@ -12,7 +12,7 @@ func GetGetTicketResponse(response map[string]any) ytrackercore.Ticket {
 
 	return ytrackercore.Ticket{
 		Self:        self,
-		Id:          id,
+		ID:          id,
 		Key:         key,
 		Title:       title,
 		Description: description,
