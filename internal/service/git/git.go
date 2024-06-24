@@ -7,17 +7,14 @@ type Service struct {
 	regExpTaskKey          *regexp.Regexp
 }
 
+const (
+	regExpTaskKey          = "[A-Z]+-[0-9]+"
+	regExpTaskKeyWithDelim = "([-/_]|^)" + regExpTaskKey + "([-/_]|$)"
+)
+
 func New() (*Service, error) {
-	regExpTaskKeyWithDelim, err := regexp.Compile("[-/_][A-Z]+-[0-9]+[-/_]")
-	if err != nil {
-		return nil, err
-	}
-	regExpTaskKey, err := regexp.Compile("[A-Z]+-[0-9]+")
-	if err != nil {
-		return nil, err
-	}
 	return &Service{
-		regExpTaskKeyWithDelim: regExpTaskKeyWithDelim,
-		regExpTaskKey:          regExpTaskKey,
+		regExpTaskKeyWithDelim: regexp.MustCompile(regExpTaskKeyWithDelim),
+		regExpTaskKey:          regexp.MustCompile(regExpTaskKey),
 	}, nil
 }
