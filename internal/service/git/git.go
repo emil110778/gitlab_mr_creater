@@ -8,7 +8,7 @@ type Service struct {
 }
 
 func New() (*Service, error) {
-	regExpTaskKeyWithDelim, err := regexp.Compile("[-/_][A-Z]+-[0-9]+[-/_]")
+	regExpTaskKeyWithDelim, err := regexp.Compile("([-/_]|^)[A-Z]+-[0-9]+([-/_]|$)")
 	if err != nil {
 		return nil, err
 	}
