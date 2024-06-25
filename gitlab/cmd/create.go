@@ -13,6 +13,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const (
+	additionalBrunchFlag = "additional_brunch"
+	mainBrunchFlag       = "main_brunch"
+)
+
 // creteCmd represents the crete command
 var createCmd = &cobra.Command{
 	Use:   "create",
@@ -35,7 +40,9 @@ After creating merge requests it will show links to created merge requests and w
 			return InternalErr
 		}
 
-		mrs, err := provider.MR.Create(ctx)
+		createAdditional, _ := cmd.Flags().GetBool(additionalBrunchFlag)
+
+		mrs, err := provider.MR.Create(ctx, createAdditional)
 		if err != nil {
 			slog.Debug("error create MR err", err.Error())
 			return InternalErr
@@ -50,15 +57,10 @@ After creating merge requests it will show links to created merge requests and w
 func init() {
 	rootCmd.AddCommand(createCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// creteCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// creteCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	const additionalBrunchUsage = "create merge requests to additional brunches"
+	createCmd.Flags().BoolP(
+		additionalBrunchFlag, "a", false, additionalBrunchUsage,
+	)
 }
 
 func logMRs(mrs []gitlabcore.CreatedMRInfo) {

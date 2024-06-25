@@ -53,7 +53,7 @@ func New(
 	}
 }
 
-func (uc *UseCase) Create(ctx context.Context) (mrs []gitlabcore.CreatedMRInfo, err error) {
+func (uc *UseCase) Create(ctx context.Context, createAdditional bool) (mrs []gitlabcore.CreatedMRInfo, err error) {
 	errorWrapper := func(err error) ([]gitlabcore.CreatedMRInfo, error) {
 		return mrs, fmt.Errorf("MR UseCase: Create: %w", err)
 	}
@@ -90,7 +90,7 @@ func (uc *UseCase) Create(ctx context.Context) (mrs []gitlabcore.CreatedMRInfo, 
 		getMRTemplateDescription = uc.gitlabService.FillMRTemplateDescription(ctx, getMRTemplateDescription, ticket.Key)
 	}
 
-	mrs, err = uc.createMRs(ctx, projectID, currentBrunch, title, getMRTemplateDescription)
+	mrs, err = uc.createMRs(ctx, projectID, currentBrunch, title, getMRTemplateDescription, createAdditional)
 	if err != nil {
 		return errorWrapper(err)
 	}
@@ -111,6 +111,7 @@ func (uc *UseCase) Create(ctx context.Context) (mrs []gitlabcore.CreatedMRInfo, 
 
 func (uc *UseCase) createMRs(
 	ctx context.Context, projectID gitlabcore.ProjectID, currentBrunch, title, mainDescription string,
+	createAdditional bool,
 ) (mrs []gitlabcore.CreatedMRInfo, err error) {
 	mainMr := uc.createMR(ctx, projectID, currentBrunch, uc.cfg.MainBrunch, title, gitlabcore.MROptionalInfo{
 		Draft:                true,
@@ -119,12 +120,14 @@ func (uc *UseCase) createMRs(
 	})
 	mrs = append(mrs, mainMr)
 
-	for _, additionalBrunch := range uc.cfg.AdditionalBrunches {
-		mrs = append(mrs, uc.createMR(
-			ctx, projectID, currentBrunch, additionalBrunch, title, gitlabcore.MROptionalInfo{
-				Description: helper.GetPointer(mainMr.URL),
-			},
-		))
+	if createAdditional {
+		for _, additionalBrunch := range uc.cfg.AdditionalBrunches {
+			mrs = append(mrs, uc.createMR(
+				ctx, projectID, currentBrunch, additionalBrunch, title, gitlabcore.MROptionalInfo{
+					Description: helper.GetPointer(mainMr.URL),
+				},
+			))
+		}
 	}
 	return mrs, nil
 }
