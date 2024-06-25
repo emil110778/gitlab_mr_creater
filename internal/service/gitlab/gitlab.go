@@ -8,7 +8,9 @@ import (
 )
 
 type mrAdapterI interface {
-	CreateMR(ctx context.Context, mr gitlabcore.MRInfo) (url string, err error)
+	Create(ctx context.Context, mr gitlabcore.MRInfo) (url string, err error)
+	List(ctx context.Context, filter gitlabcore.FilterMR) (mrs []gitlabcore.CreatedMRInfo, err error)
+	Update(ctx context.Context, mr gitlabcore.MRUpdateInfo) (url string, err error)
 }
 type projectAdapterI interface {
 	GetProjects(ctx context.Context) (gitlabProjects []gitlabcore.Project, err error)

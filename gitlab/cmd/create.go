@@ -30,13 +30,13 @@ After creating merge requests it will show links to created merge requests and w
 
 		cfg, err := config.New()
 		if err != nil {
-			slog.Debug("error load config err", err.Error())
+			slog.Error("error load config err", err.Error())
 			return ErrConfigure
 		}
 
 		provider, err := internal.New(cfg)
 		if err != nil {
-			slog.Debug("error configure provider err", err.Error())
+			slog.Error("error configure provider err", err.Error())
 			return InternalErr
 		}
 
@@ -44,7 +44,7 @@ After creating merge requests it will show links to created merge requests and w
 
 		mrs, err := provider.MR.Create(ctx, createAdditional)
 		if err != nil {
-			slog.Debug("error create MR err", err.Error())
+			slog.Error("error create MR err", err.Error())
 			return InternalErr
 		}
 
@@ -63,9 +63,9 @@ func init() {
 	)
 }
 
-func logMRs(mrs []gitlabcore.CreatedMRInfo) {
+func logMRs(mrs []gitlabcore.ResultMRInfo) {
 	for _, mr := range mrs {
-		log := fmt.Sprintf("MR to brunch: %s", mr.Brunch)
+		log := fmt.Sprintf("\nMR to brunch: %s", mr.Brunch)
 		if mr.URL != "" {
 			log += fmt.Sprintf("\nurl: %s", mr.URL)
 		}
