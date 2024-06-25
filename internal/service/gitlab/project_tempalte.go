@@ -58,7 +58,7 @@ func fillMRTemplateField(description, field string) string {
 func getField(fieldText string) (string, error) {
 	validate := func(input string) error {
 		if input == "" {
-			return errors.New("empty brunch")
+			return errors.New("empty value")
 		}
 		return nil
 	}
