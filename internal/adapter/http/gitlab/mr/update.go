@@ -10,14 +10,16 @@ import (
 	"github.com/xanzy/go-gitlab"
 )
 
-func (adapter *Adapter) Create(
-	ctx context.Context, mr gitlabcore.MRInfo,
+func (adapter *Adapter) Update(
+	ctx context.Context, mr gitlabcore.MRUpdateInfo,
 ) (url string, err error) {
 	errHandleFunc := httpcore.GetHandleErrorFunc("gitlab", "CreateMR", url)
 
-	gitlabMR := port.GetMRRequest(mr)
+	gitlabMR := port.UpdateMRRequest(mr)
 
-	resultMR, responseRaw, err := adapter.client.CreateMergeRequest(int(mr.ProjectID), &gitlabMR, gitlab.WithContext(ctx))
+	resultMR, responseRaw, err := adapter.client.UpdateMergeRequest(
+		int(mr.ProjectID), int(mr.ID), &gitlabMR, gitlab.WithContext(ctx),
+	)
 	resp := response.GetResponse(responseRaw)
 	if httpcore.HandleHTTPError(err, resp) != nil {
 		return errHandleFunc(err, resp)
