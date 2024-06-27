@@ -1,6 +1,6 @@
 package config
 
 type Repo struct {
-	MainBrunch         string   `mapstructure:"main_brunch" validate:"required"`
-	AdditionalBrunches []string `mapstructure:"additional_brunches"`
+	MainBranch         string   `mapstructure:"main_branch" validate:"required"`
+	AdditionalBranches []string `mapstructure:"additional_branches"`
 }

@@ -12,7 +12,7 @@ import (
 
 func (service *Service) GetRepoURL(_ context.Context) (url string, err error) {
 	errHandler := func(err error) (string, error) {
-		return url, fmt.Errorf("GetCurrentBrunch: %w", err)
+		return url, fmt.Errorf("GetCurrentBranch: %w", err)
 	}
 
 	repo, err := getRepo()

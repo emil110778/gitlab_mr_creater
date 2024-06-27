@@ -10,9 +10,10 @@ import (
 	"os"
 	"strings"
 
-	"github.com/emildeev/gitlab_helper/pkg/helper"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+
+	"github.com/emildeev/gitlab_helper/pkg/helper"
 )
 
 const (
@@ -26,7 +27,7 @@ var (
 		Short: "Gitlab helper tool",
 		Long: `This cli application is used to create merge requests in gitlab
 It uses gitlab api, yandex tracker api to create merge request with Title and Description,
-and git commands for getting current brunch and repository`,
+and git commands for getting current branch and repository`,
 		TraverseChildren: true,
 	}
 )

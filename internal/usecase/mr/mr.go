@@ -10,8 +10,8 @@ import (
 
 type gitServiceI interface {
 	GetRepoURL(_ context.Context) (url string, err error)
-	GetCurrentBrunch() (brunch string, err error)
-	GetTicketFromBrunch(brunch string) (string, error)
+	GetCurrentBranch() (branch string, err error)
+	GetTicketFromBranch(branch string) (string, error)
 }
 
 type gitlabServiceI interface {
@@ -19,7 +19,7 @@ type gitlabServiceI interface {
 	CreateMR(ctx context.Context, mr gitlabcore.MRInfo) (url string, err error)
 	GetDefaultMRTemplateDescription(ctx context.Context, projectID gitlabcore.ProjectID) (description string, err error)
 	FillMRTemplateDescription(_ context.Context, description, tickerURL string) string
-	FindOpenedByBrunch(
+	FindOpenedByBranch(
 		ctx context.Context, projectID gitlabcore.ProjectID, sourceBranch string,
 	) (mrs []gitlabcore.CreatedMRInfo, err error)
 	UpdateMRDescription(

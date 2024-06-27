@@ -2,9 +2,9 @@ package git
 
 import "testing"
 
-func TestGetCurrentBrunch(t *testing.T) {
+func TestGetCurrentBranch(t *testing.T) {
 	//service := Service{}
-	//_, err := service.GetCurrentBrunch()
+	//_, err := service.GetCurrentBranch()
 	//if err != nil {
 	//	t.Errorf("Error: %v", err)
 	//}

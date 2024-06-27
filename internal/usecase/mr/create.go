@@ -27,12 +27,12 @@ func (uc *UseCase) Create(ctx context.Context, createAdditional bool) (mrs []git
 		return errorWrapper(err)
 	}
 
-	currentBrunch, err := uc.gitService.GetCurrentBrunch()
+	currentBranch, err := uc.gitService.GetCurrentBranch()
 	if err != nil {
 		return errorWrapper(err)
 	}
 
-	ticket, err := uc.getMRTitle(ctx, currentBrunch)
+	ticket, err := uc.getMRTitle(ctx, currentBranch)
 	if err != nil {
 		slog.Warn("getMRTitle error: ", err)
 	}
@@ -41,11 +41,11 @@ func (uc *UseCase) Create(ctx context.Context, createAdditional bool) (mrs []git
 		title = fmt.Sprintf("%s: %s", ticket.Key, ticket.Title)
 	}
 
-	mrs = uc.createMRs(ctx, projectID, currentBrunch, title, createAdditional, ticket.Key)
+	mrs = uc.createMRs(ctx, projectID, currentBranch, title, createAdditional, ticket.Key)
 
 	if len(mrs) != 0 && title != "" {
 		for _, mr := range mrs {
-			if mr.Brunch == uc.cfg.MainBrunch && mr.URL != "" {
+			if mr.Branch == uc.cfg.MainBranch && mr.URL != "" {
 				err = uc.yTrackerService.SetMR(ticket.Key, mr.URL)
 				if err != nil {
 					return errorWrapper(err)
@@ -58,12 +58,12 @@ func (uc *UseCase) Create(ctx context.Context, createAdditional bool) (mrs []git
 }
 
 func (uc *UseCase) createMRs(
-	ctx context.Context, projectID gitlabcore.ProjectID, currentBrunch, title string,
+	ctx context.Context, projectID gitlabcore.ProjectID, currentBranch, title string,
 	createAdditional bool, ticketKey string,
 ) (mrs []gitlabcore.ResultMRInfo) {
-	createdMrs, err := uc.gitlabService.FindOpenedByBrunch(ctx, projectID, currentBrunch)
+	createdMrs, err := uc.gitlabService.FindOpenedByBranch(ctx, projectID, currentBranch)
 	if err != nil {
-		slog.Warn("FindOpenedByBrunch error: ", err)
+		slog.Warn("FindOpenedByBranch error: ", err)
 	}
 
 	createdMrsMap := helper.GetMapFromSliceByField(createdMrs, func(obj gitlabcore.CreatedMRInfo) string {
@@ -71,7 +71,7 @@ func (uc *UseCase) createMRs(
 	})
 
 	var mainDescription string
-	if _, exist := createdMrsMap[uc.cfg.MainBrunch]; !exist {
+	if _, exist := createdMrsMap[uc.cfg.MainBranch]; !exist {
 		mainDescription, err = uc.gitlabService.GetDefaultMRTemplateDescription(ctx, projectID)
 		if err != nil {
 			slog.Warn("GetDefaultMRTemplateDescription error: ", err)
@@ -82,7 +82,7 @@ func (uc *UseCase) createMRs(
 		}
 	}
 
-	mainMr := uc.createMR(ctx, projectID, currentBrunch, uc.cfg.MainBrunch, title, gitlabcore.MROptionalInfo{
+	mainMr := uc.createMR(ctx, projectID, currentBranch, uc.cfg.MainBranch, title, gitlabcore.MROptionalInfo{
 		Draft:                true,
 		ApprovalsBeforeMerge: helper.GetPointer(2),
 		Description:          helper.GetPointer(mainDescription),
@@ -91,9 +91,9 @@ func (uc *UseCase) createMRs(
 	mrs = append(mrs, mainMr)
 
 	if createAdditional {
-		for _, additionalBrunch := range uc.cfg.AdditionalBrunches {
+		for _, additionalBranch := range uc.cfg.AdditionalBranches {
 			mrs = append(mrs, uc.createMR(
-				ctx, projectID, currentBrunch, additionalBrunch, title, gitlabcore.MROptionalInfo{
+				ctx, projectID, currentBranch, additionalBranch, title, gitlabcore.MROptionalInfo{
 					Description: helper.GetPointer(mainMr.URL),
 				}, createdMrsMap,
 			))
@@ -102,8 +102,8 @@ func (uc *UseCase) createMRs(
 	return mrs
 }
 
-func (uc *UseCase) getMRTitle(ctx context.Context, brunch string) (ticket ytrackercore.Ticket, err error) {
-	ticketKey, err := uc.gitService.GetTicketFromBrunch(brunch)
+func (uc *UseCase) getMRTitle(ctx context.Context, branch string) (ticket ytrackercore.Ticket, err error) {
+	ticketKey, err := uc.gitService.GetTicketFromBranch(branch)
 	if err != nil {
 		return ticket, fmt.Errorf("getTaskTitle: %w", err)
 	}
@@ -116,13 +116,13 @@ func (uc *UseCase) getMRTitle(ctx context.Context, brunch string) (ticket ytrack
 }
 
 func (uc *UseCase) createMR(
-	ctx context.Context, projectID gitlabcore.ProjectID, currentBrunch, targetBranch string, title string,
+	ctx context.Context, projectID gitlabcore.ProjectID, currentBranch, targetBranch string, title string,
 	optionalInfo gitlabcore.MROptionalInfo,
 	createdMrsMap map[string]gitlabcore.CreatedMRInfo,
 ) (mr gitlabcore.ResultMRInfo) {
 	if mrCreated, exist := createdMrsMap[targetBranch]; exist {
 		mr.URL = mrCreated.URL
-		mr.Brunch = mrCreated.TargetBranch
+		mr.Branch = mrCreated.TargetBranch
 		mr.Err = errors.New("mr already exists")
 
 		if optionalInfo.Description != nil && *optionalInfo.Description != "" {
@@ -135,7 +135,7 @@ func (uc *UseCase) createMR(
 		mrURL, err := uc.gitlabService.CreateMR(ctx, gitlabcore.MRInfo{
 			Title:          title,
 			ProjectID:      projectID,
-			SourceBranch:   currentBrunch,
+			SourceBranch:   currentBranch,
 			TargetBranch:   targetBranch,
 			MROptionalInfo: optionalInfo,
 		})
@@ -143,7 +143,7 @@ func (uc *UseCase) createMR(
 			slog.Error("CreateMR error: ", err)
 		}
 		mr = gitlabcore.ResultMRInfo{
-			Brunch: targetBranch,
+			Branch: targetBranch,
 			URL:    mrURL,
 			Err:    getMRError(err),
 		}

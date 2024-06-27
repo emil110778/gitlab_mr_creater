@@ -59,6 +59,6 @@ type MROptionalUpdateInfo struct {
 
 type ResultMRInfo struct {
 	URL    string
-	Brunch string
+	Branch string
 	Err    error
 }
