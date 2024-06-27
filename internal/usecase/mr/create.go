@@ -22,28 +22,28 @@ func (uc *UseCase) Create(ctx context.Context, createAdditional bool) (mrs []git
 		return errorWrapper(err)
 	}
 
-	slog.Debug("mr uc Create: url", repoURL)
+	slog.Debug("mr uc Create:", "url", repoURL)
 
 	projectID, err := uc.gitlabService.GetProjectIDByURL(ctx, repoURL)
 	if err != nil {
 		return errorWrapper(err)
 	}
 
-	slog.Debug("mr uc Create: projectID", projectID)
+	slog.Debug("mr uc Create:", "projectID", projectID)
 
 	currentBranch, err := uc.gitService.GetCurrentBranch()
 	if err != nil {
 		return errorWrapper(err)
 	}
 
-	slog.Debug("mr uc Create: currentBranch", currentBranch)
+	slog.Debug("mr uc Create:", "currentBranch", currentBranch)
 
 	ticket, err := uc.getMRTitle(ctx, currentBranch)
 	if err != nil {
-		slog.Warn("getMRTitle error: ", err)
+		slog.Warn("getMRTitle:", "err", err)
 	}
 
-	slog.Debug("mr uc Create: ticket", ticket)
+	slog.Debug("mr uc Create:", "ticket", ticket)
 
 	var title string
 	if ticket.Key != "" && ticket.Title != "" {
@@ -52,7 +52,7 @@ func (uc *UseCase) Create(ctx context.Context, createAdditional bool) (mrs []git
 
 	mrs = uc.createMRs(ctx, projectID, currentBranch, title, createAdditional, ticket.Key)
 
-	slog.Debug("mr uc Create: mrs", mrs)
+	slog.Debug("mr uc Create:", "mrs", mrs)
 
 	if len(mrs) != 0 && title != "" {
 		for _, mr := range mrs {
@@ -74,7 +74,7 @@ func (uc *UseCase) createMRs(
 ) (mrs []gitlabcore.ResultMRInfo) {
 	createdMrs, err := uc.gitlabService.FindOpenedByBranch(ctx, projectID, currentBranch)
 	if err != nil {
-		slog.Warn("FindOpenedByBranch error: ", err)
+		slog.Warn("FindOpenedByBranch:", "err", err)
 	}
 
 	createdMrsMap := helper.GetMapFromSliceByField(createdMrs, func(obj gitlabcore.CreatedMRInfo) string {
@@ -85,7 +85,7 @@ func (uc *UseCase) createMRs(
 	if _, exist := createdMrsMap[uc.cfg.MainBranch]; !exist {
 		mainDescription, err = uc.gitlabService.GetDefaultMRTemplateDescription(ctx, projectID)
 		if err != nil {
-			slog.Warn("GetDefaultMRTemplateDescription error: ", err)
+			slog.Warn("GetDefaultMRTemplateDescription:", "err", err)
 		}
 
 		if mainDescription != "" {
@@ -139,7 +139,7 @@ func (uc *UseCase) createMR(
 		if optionalInfo.Description != nil && *optionalInfo.Description != "" {
 			_, err := uc.gitlabService.UpdateMRDescription(ctx, projectID, mrCreated.ID, *optionalInfo.Description)
 			if err != nil {
-				slog.Error("UpdateMRDescription error: ", err)
+				slog.Error("UpdateMRDescription:", "err", err)
 			}
 		}
 	} else {
@@ -151,7 +151,7 @@ func (uc *UseCase) createMR(
 			MROptionalInfo: optionalInfo,
 		})
 		if err != nil {
-			slog.Error("CreateMR error: ", err)
+			slog.Error("CreateMR:", "err", err)
 		}
 		mr = gitlabcore.ResultMRInfo{
 			Branch: targetBranch,

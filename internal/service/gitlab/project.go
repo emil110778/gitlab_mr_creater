@@ -18,5 +18,5 @@ func (service *Service) GetProjectIDByURL(ctx context.Context, url string) (proj
 			return project.ID, nil
 		}
 	}
-	return projectID, core.ErrNotFound
+	return projectID, fmt.Errorf("GetProjectIDByURL: %w", core.ErrNotFound)
 }

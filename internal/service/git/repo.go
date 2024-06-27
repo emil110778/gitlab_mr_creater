@@ -21,14 +21,14 @@ func (service *Service) GetRepoURL(_ context.Context) (url string, err error) {
 		return errHandler(err)
 	}
 
-	slog.Debug("GetRepoURL: repo", repo)
+	slog.Debug("GetRepoURL:", "repo", repo)
 
 	remotes, err := repo.Remotes()
 	if err != nil {
 		return errHandler(err)
 	}
 
-	slog.Debug("GetRepoURL: remotes", remotes)
+	slog.Debug("GetRepoURL:", "remotes", remotes)
 
 	if len(remotes) == 0 {
 		return errHandler(fmt.Errorf("no remotes found"))
@@ -42,7 +42,7 @@ func (service *Service) GetRepoURL(_ context.Context) (url string, err error) {
 
 	url = strings.TrimSuffix(urls[0], ".git")
 
-	slog.Debug("GetRepoURL: url", url)
+	slog.Debug("GetRepoURL:", "url", url)
 
 	return url, nil
 }

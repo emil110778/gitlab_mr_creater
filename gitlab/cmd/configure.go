@@ -50,7 +50,7 @@ and repository branch configuration
 		_, resp, err := client.Version.GetVersion()
 		if err != nil {
 			if resp != nil && resp.StatusCode == http.StatusUnauthorized {
-				slog.Error("gitlab authorization error", err)
+				slog.Error("gitlab authorization:", "err", err)
 				return errors.New("gitlab authorization error")
 			}
 			return err

@@ -31,13 +31,13 @@ After creating merge requests it will show links to created merge requests and w
 
 		cfg, err := config.New()
 		if err != nil {
-			slog.Error("error load config err", err.Error())
+			slog.Error("load config:", "err", err.Error())
 			return ErrConfigure
 		}
 
 		provider, err := internal.New(cfg)
 		if err != nil {
-			slog.Error("error configure provider err", err.Error())
+			slog.Error("configure provider:", "err", err.Error())
 			return InternalErr
 		}
 
@@ -45,7 +45,7 @@ After creating merge requests it will show links to created merge requests and w
 
 		mrs, err := provider.MR.Create(ctx, createAdditional)
 		if err != nil {
-			slog.Error("error create MR err", err.Error())
+			slog.Error("create MR", "err", err.Error())
 			return InternalErr
 		}
 
