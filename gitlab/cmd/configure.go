@@ -11,12 +11,13 @@ import (
 	"strconv"
 
 	tracker "github.com/dvsnin/yandex-tracker-go"
-	configcmd "github.com/emildeev/gitlab_helper/gitlab/cmd/config"
-	"github.com/emildeev/gitlab_helper/internal/config"
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/xanzy/go-gitlab"
+
+	configcmd "github.com/emildeev/gitlab_helper/gitlab/cmd/config"
+	"github.com/emildeev/gitlab_helper/internal/config"
 )
 
 // configureCmd represents the configure command
@@ -48,7 +49,7 @@ and repository brunch configuration
 		}
 		_, resp, err := client.Version.GetVersion()
 		if err != nil {
-			if resp.StatusCode == http.StatusUnauthorized {
+			if resp != nil && resp.StatusCode == http.StatusUnauthorized {
 				slog.Error("gitlab authorization error", err)
 				return errors.New("gitlab authorization error")
 			}
