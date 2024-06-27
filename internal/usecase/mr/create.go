@@ -22,26 +22,37 @@ func (uc *UseCase) Create(ctx context.Context, createAdditional bool) (mrs []git
 		return errorWrapper(err)
 	}
 
+	slog.Debug("mr uc Create: url", repoURL)
+
 	projectID, err := uc.gitlabService.GetProjectIDByURL(ctx, repoURL)
 	if err != nil {
 		return errorWrapper(err)
 	}
+
+	slog.Debug("mr uc Create: projectID", projectID)
 
 	currentBranch, err := uc.gitService.GetCurrentBranch()
 	if err != nil {
 		return errorWrapper(err)
 	}
 
+	slog.Debug("mr uc Create: currentBranch", currentBranch)
+
 	ticket, err := uc.getMRTitle(ctx, currentBranch)
 	if err != nil {
 		slog.Warn("getMRTitle error: ", err)
 	}
+
+	slog.Debug("mr uc Create: ticket", ticket)
+
 	var title string
 	if ticket.Key != "" && ticket.Title != "" {
 		title = fmt.Sprintf("%s: %s", ticket.Key, ticket.Title)
 	}
 
 	mrs = uc.createMRs(ctx, projectID, currentBranch, title, createAdditional, ticket.Key)
+
+	slog.Debug("mr uc Create: mrs", mrs)
 
 	if len(mrs) != 0 && title != "" {
 		for _, mr := range mrs {
