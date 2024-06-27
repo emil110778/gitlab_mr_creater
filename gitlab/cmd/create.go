@@ -7,15 +7,16 @@ import (
 	"fmt"
 	"log/slog"
 
+	"github.com/spf13/cobra"
+
 	"github.com/emildeev/gitlab_helper/internal"
 	"github.com/emildeev/gitlab_helper/internal/config"
 	gitlabcore "github.com/emildeev/gitlab_helper/internal/core/gitlab"
-	"github.com/spf13/cobra"
 )
 
 const (
-	additionalBrunchFlag = "additional_brunch"
-	mainBrunchFlag       = "main_brunch"
+	additionalBranchFlag = "additional_branch"
+	mainBranchFlag       = "main_branch"
 )
 
 // creteCmd represents the crete command
@@ -23,7 +24,7 @@ var createCmd = &cobra.Command{
 	Use:   "create",
 	Short: "Create merge requests",
 	Long: `This command get required information from git and yandex tracker and ask addition information in cli for creating
-merge requests from current brunch to target main brunch (configured) and additional brunches (configured).
+merge requests from current branch to target main branch (configured) and additional branches (configured).
 After creating merge requests it will show links to created merge requests and will set it to ticket in yandex tracker`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := cmd.Context()
@@ -40,7 +41,7 @@ After creating merge requests it will show links to created merge requests and w
 			return InternalErr
 		}
 
-		createAdditional, _ := cmd.Flags().GetBool(additionalBrunchFlag)
+		createAdditional, _ := cmd.Flags().GetBool(additionalBranchFlag)
 
 		mrs, err := provider.MR.Create(ctx, createAdditional)
 		if err != nil {
@@ -57,15 +58,15 @@ After creating merge requests it will show links to created merge requests and w
 func init() {
 	rootCmd.AddCommand(createCmd)
 
-	const additionalBrunchUsage = "create merge requests to additional brunches"
+	const additionalBranchUsage = "create merge requests to additional branches"
 	createCmd.Flags().BoolP(
-		additionalBrunchFlag, "a", false, additionalBrunchUsage,
+		additionalBranchFlag, "a", false, additionalBranchUsage,
 	)
 }
 
 func logMRs(mrs []gitlabcore.ResultMRInfo) {
 	for _, mr := range mrs {
-		log := fmt.Sprintf("\nMR to brunch: %s", mr.Brunch)
+		log := fmt.Sprintf("\nMR to branch: %s", mr.Branch)
 		if mr.URL != "" {
 			log += fmt.Sprintf("\nurl: %s", mr.URL)
 		}

@@ -27,7 +27,7 @@ var configureCmd = &cobra.Command{
 	Long: `This command will configure environment for tool:
 gitlab credentials
 yandex tracker credentials
-and repository brunch configuration
+and repository branch configuration
 `,
 	SilenceErrors: false,
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -69,19 +69,15 @@ and repository brunch configuration
 		yTrackerClient := tracker.New("OAuth "+yTrackerToken, strconv.Itoa(yTrackerOrgID), "")
 		_, err = yTrackerClient.Myself()
 		if err != nil {
-			if resp.StatusCode == http.StatusUnauthorized {
-				slog.Error("yandex tracker authorization error", err)
-				return errors.New("yandex tracker authorization error")
-			}
 			return err
 		}
 
-		mainBrunch, err := configcmd.GetMainBrunch(currentCfg.Repo.MainBrunch)
+		mainBranch, err := configcmd.GetMainBranch(currentCfg.Repo.MainBranch)
 		if err != nil {
 			return err
 		}
 
-		additionalBrunches, err := configcmd.GetAdditionalBrunch(currentCfg.Repo.AdditionalBrunches)
+		additionalBranches, err := configcmd.GetAdditionalBranch(currentCfg.Repo.AdditionalBranches)
 		if err != nil {
 			return err
 		}
@@ -98,8 +94,8 @@ and repository brunch configuration
 				},
 			},
 			Repo: config.Repo{
-				MainBrunch:         mainBrunch,
-				AdditionalBrunches: additionalBrunches,
+				MainBranch:         mainBranch,
+				AdditionalBranches: additionalBranches,
 			},
 		}
 

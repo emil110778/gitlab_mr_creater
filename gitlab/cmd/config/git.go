@@ -9,24 +9,24 @@ import (
 )
 
 const (
-	defaultMainBrunch = "main"
+	defaultMainBranch = "main"
 	branchesDelim     = ","
 )
 
-func GetMainBrunch(defaultVal string) (string, error) {
+func GetMainBranch(defaultVal string) (string, error) {
 	validate := func(input string) error {
 		if input == "" {
-			return errors.New("empty brunch")
+			return errors.New("empty branch")
 		}
 		return nil
 	}
 
 	if defaultVal == "" {
-		defaultVal = defaultMainBrunch
+		defaultVal = defaultMainBranch
 	}
 
 	prompt := promptui.Prompt{
-		Label:     "Main brunch",
+		Label:     "Main branch",
 		Default:   defaultVal,
 		Validate:  validate,
 		AllowEdit: true,
@@ -37,21 +37,21 @@ func GetMainBrunch(defaultVal string) (string, error) {
 	return host, err
 }
 
-func GetAdditionalBrunch(defaultVal []string) ([]string, error) {
+func GetAdditionalBranch(defaultVal []string) ([]string, error) {
 	prompt := promptui.Prompt{
-		Label:     fmt.Sprintf("Additional brunches (release%sprepod%stest)", branchesDelim, branchesDelim),
+		Label:     fmt.Sprintf("Additional branches (release%sprepod%stest)", branchesDelim, branchesDelim),
 		Default:   strings.Join(defaultVal, branchesDelim),
 		AllowEdit: true,
 	}
 
-	brunches, err := prompt.Run()
+	branches, err := prompt.Run()
 	if err != nil {
 		return nil, err
 	}
 
-	if brunches == "" {
+	if branches == "" {
 		return nil, nil
 	}
 
-	return strings.Split(brunches, branchesDelim), err
+	return strings.Split(branches, branchesDelim), err
 }

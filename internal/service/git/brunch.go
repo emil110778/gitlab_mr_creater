@@ -5,9 +5,9 @@ import (
 	"strings"
 )
 
-func (service *Service) GetCurrentBrunch() (brunch string, err error) {
+func (service *Service) GetCurrentBranch() (branch string, err error) {
 	errHandler := func(err error) (string, error) {
-		return brunch, fmt.Errorf("GetCurrentBrunch: %w", err)
+		return branch, fmt.Errorf("GetCurrentBranch: %w", err)
 	}
 
 	repo, err := getRepo()
@@ -22,11 +22,11 @@ func (service *Service) GetCurrentBrunch() (brunch string, err error) {
 	return strings.TrimPrefix(string(h.Name()), "refs/heads/"), nil
 }
 
-func (service *Service) GetTicketFromBrunch(brunch string) (string, error) {
-	keyWithDelim := service.regExpTaskKeyWithDelim.FindString(brunch)
+func (service *Service) GetTicketFromBranch(branch string) (string, error) {
+	keyWithDelim := service.regExpTaskKeyWithDelim.FindString(branch)
 	key := service.regExpTaskKey.FindString(keyWithDelim)
 	if key == "" {
-		return "", fmt.Errorf("ticket not found in brunch name %s", brunch)
+		return "", fmt.Errorf("ticket not found in branch name %s", branch)
 	}
 	return key, nil
 }

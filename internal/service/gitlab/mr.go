@@ -8,7 +8,7 @@ import (
 	"github.com/emildeev/gitlab_helper/pkg/helper"
 )
 
-func (service *Service) FindOpenedByBrunch(
+func (service *Service) FindOpenedByBranch(
 	ctx context.Context, projectID gitlabcore.ProjectID, sourceBranch string,
 ) (mrs []gitlabcore.CreatedMRInfo, err error) {
 	mrs, err = service.GetListMR(ctx, gitlabcore.FilterMR{
@@ -17,7 +17,7 @@ func (service *Service) FindOpenedByBrunch(
 		State:        helper.GetPointer(gitlabcore.MRStateOpened),
 	})
 	if err != nil {
-		return mrs, fmt.Errorf("FindOpenedByBrunch: %w", err)
+		return mrs, fmt.Errorf("FindOpenedByBranch: %w", err)
 	}
 	return mrs, nil
 }
