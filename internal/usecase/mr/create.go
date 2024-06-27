@@ -38,12 +38,12 @@ func (uc *UseCase) Create(ctx context.Context, createAdditional bool) (mrs []git
 
 	slog.Debug("mr uc Create:", "currentBranch", currentBranch)
 
-	ticket, err := uc.getMRTitle(ctx, currentBranch)
+	ticket, err := uc.getMRTicket(ctx, currentBranch)
 	if err != nil {
-		slog.Warn("getMRTitle:", "err", err)
+		slog.Warn("getMRTicket:", "err", err)
 	}
 
-	slog.Debug("mr uc Create:", "ticket", ticket)
+	slog.Debug("mr uc Create:", "ticket.Title", ticket.Title, "ticket.Key", ticket.Key)
 
 	var title string
 	if ticket.Key != "" && ticket.Title != "" {
@@ -113,7 +113,7 @@ func (uc *UseCase) createMRs(
 	return mrs
 }
 
-func (uc *UseCase) getMRTitle(ctx context.Context, branch string) (ticket ytrackercore.Ticket, err error) {
+func (uc *UseCase) getMRTicket(ctx context.Context, branch string) (ticket ytrackercore.Ticket, err error) {
 	ticketKey, err := uc.gitService.GetTicketFromBranch(branch)
 	if err != nil {
 		return ticket, fmt.Errorf("getTaskTitle: %w", err)
