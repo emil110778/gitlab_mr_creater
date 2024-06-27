@@ -39,7 +39,7 @@ func GitlabGetHost(defaultVal string) (string, error) {
 
 func GitlabGetToken(defaultVal string) (string, error) {
 	validate := func(input string) error {
-		validateRegexp := "[0-9a-zA-Z\\-]{20}"
+		validateRegexp := "[0-9a-zA-Z\\-_]{20}"
 		matched, err := regexp.MatchString(validateRegexp, input)
 		if err != nil {
 			return fmt.Errorf("validate error: %w", err)
