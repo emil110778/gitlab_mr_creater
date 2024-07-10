@@ -97,6 +97,7 @@ func (uc *UseCase) createMRs(
 		Draft:                true,
 		ApprovalsBeforeMerge: helper.GetPointer(2),
 		Description:          helper.GetPointer(mainDescription),
+		RemoveSourceBranch:   helper.GetPointer(true),
 	}, createdMrsMap)
 
 	mrs = append(mrs, mainMr)
