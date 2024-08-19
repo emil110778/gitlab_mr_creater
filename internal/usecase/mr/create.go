@@ -38,23 +38,25 @@ func (uc *UseCase) Create(ctx context.Context, createAdditional bool) (mrs []git
 
 	slog.Debug("mr uc Create:", "currentBranch", currentBranch)
 
-	ticket, err := uc.getMRTicket(ctx, currentBranch)
-	if err != nil {
+	ticket, ticketErr := uc.getMRTicket(ctx, currentBranch)
+	if ticketErr != nil {
 		slog.Warn("getMRTicket:", "err", err)
 	}
 
 	slog.Debug("mr uc Create:", "ticket.Title", ticket.Title, "ticket.Key", ticket.Key)
 
 	var title string
-	if ticket.Key != "" && ticket.Title != "" {
+	if ticketErr == nil && ticket.Key != "" && ticket.Title != "" {
 		title = fmt.Sprintf("%s: %s", ticket.Key, ticket.Title)
+	} else {
+		title = currentBranch
 	}
 
 	mrs = uc.createMRs(ctx, projectID, currentBranch, title, createAdditional, ticket.Key)
 
 	slog.Debug("mr uc Create:", "mrs", mrs)
 
-	if len(mrs) != 0 && title != "" {
+	if ticketErr == nil && len(mrs) != 0 {
 		for _, mr := range mrs {
 			if mr.Branch == uc.cfg.MainBranch && mr.URL != "" {
 				err = uc.yTrackerService.SetMR(ticket.Key, mr.URL)
