@@ -13,7 +13,7 @@ type mrAdapterI interface {
 	Update(ctx context.Context, mr gitlabcore.MRUpdateInfo) (url string, err error)
 }
 type projectAdapterI interface {
-	GetProjects(ctx context.Context) (gitlabProjects []gitlabcore.Project, err error)
+	GetProjectsByProjectName(ctx context.Context, projectName *string) (gitlabProjects []gitlabcore.Project, err error)
 }
 type projectTemplateAdapterI interface {
 	GetMRTemplate(ctx context.Context, projectID int, templateName string) (mrTemplate gitlabcore.MRTemplate, err error)

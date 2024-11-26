@@ -1,12 +1,20 @@
 package port
 
 import (
-	gitlabcore "github.com/emildeev/gitlab_helper/internal/core/gitlab"
+	"math"
+
 	"github.com/xanzy/go-gitlab"
+
+	gitlabcore "github.com/emildeev/gitlab_helper/internal/core/gitlab"
 )
 
-func GetGetProjectsRequest() *gitlab.ListProjectsOptions {
-	return &gitlab.ListProjectsOptions{}
+func GetGetProjectsRequest(projectName *string) *gitlab.ListProjectsOptions {
+	return &gitlab.ListProjectsOptions{
+		ListOptions: gitlab.ListOptions{
+			PerPage: math.MaxInt,
+		},
+		Search: projectName,
+	}
 }
 
 func GetGetProjectsResponse(projects []*gitlab.Project) (gitlabProjects []gitlabcore.Project) {
