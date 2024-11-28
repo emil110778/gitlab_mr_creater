@@ -5,6 +5,24 @@ import (
 	"strings"
 )
 
+func (service *Service) CheckBrunch(branch string) bool {
+	repo, err := getRepo()
+	if err != nil {
+		return false
+	}
+
+	branchCfg, err := repo.Branch(branch)
+	if err != nil {
+		return false
+	}
+	err = branchCfg.Validate()
+	if err != nil {
+		return false
+	}
+
+	return true
+}
+
 func (service *Service) GetCurrentBranch() (branch string, err error) {
 	errHandler := func(err error) (string, error) {
 		return branch, fmt.Errorf("GetCurrentBranch: %w", err)

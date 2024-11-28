@@ -13,6 +13,10 @@ import (
 	"github.com/emildeev/gitlab_helper/pkg/helper"
 )
 
+const (
+	defaultMainBrunch = "main"
+)
+
 func (uc *UseCase) Create(ctx context.Context, createAdditional bool) (mrs []gitlabcore.ResultMRInfo, err error) {
 	errorWrapper := func(err error) ([]gitlabcore.ResultMRInfo, error) {
 		return mrs, fmt.Errorf("MR UseCase: Create: %w", err)
@@ -79,9 +83,11 @@ func (uc *UseCase) createMRs(
 		slog.Warn("FindOpenedByBranch:", "err", err)
 	}
 
-	createdMrsMap := helper.GetMapFromSliceByField(createdMrs, func(obj gitlabcore.CreatedMRInfo) string {
-		return obj.TargetBranch
-	})
+	createdMrsMap := helper.GetMapFromSliceByField(
+		createdMrs, func(obj gitlabcore.CreatedMRInfo) string {
+			return obj.TargetBranch
+		},
+	)
 
 	var mainDescription string
 	if _, exist := createdMrsMap[uc.cfg.MainBranch]; !exist {
@@ -95,22 +101,30 @@ func (uc *UseCase) createMRs(
 		}
 	}
 
-	mainMr := uc.createMR(ctx, projectID, currentBranch, uc.cfg.MainBranch, title, gitlabcore.MROptionalInfo{
-		Draft:                true,
-		ApprovalsBeforeMerge: helper.GetPointer(2),
-		Description:          helper.GetPointer(mainDescription),
-		RemoveSourceBranch:   helper.GetPointer(true),
-	}, createdMrsMap)
+	if !uc.gitService.CheckBrunch(uc.cfg.MainBranch) {
+		uc.cfg.MainBranch = defaultMainBrunch
+	}
+
+	mainMr := uc.createMR(
+		ctx, projectID, currentBranch, uc.cfg.MainBranch, title, gitlabcore.MROptionalInfo{
+			Draft:                true,
+			ApprovalsBeforeMerge: helper.GetPointer(2),
+			Description:          helper.GetPointer(mainDescription),
+			RemoveSourceBranch:   helper.GetPointer(true),
+		}, createdMrsMap,
+	)
 
 	mrs = append(mrs, mainMr)
 
 	if createAdditional {
 		for _, additionalBranch := range uc.cfg.AdditionalBranches {
-			mrs = append(mrs, uc.createMR(
-				ctx, projectID, currentBranch, additionalBranch, title, gitlabcore.MROptionalInfo{
-					Description: helper.GetPointer(mainMr.URL),
-				}, createdMrsMap,
-			))
+			mrs = append(
+				mrs, uc.createMR(
+					ctx, projectID, currentBranch, additionalBranch, title, gitlabcore.MROptionalInfo{
+						Description: helper.GetPointer(mainMr.URL),
+					}, createdMrsMap,
+				),
+			)
 		}
 	}
 	return mrs
@@ -146,13 +160,15 @@ func (uc *UseCase) createMR(
 			}
 		}
 	} else {
-		mrURL, err := uc.gitlabService.CreateMR(ctx, gitlabcore.MRInfo{
-			Title:          title,
-			ProjectID:      projectID,
-			SourceBranch:   currentBranch,
-			TargetBranch:   targetBranch,
-			MROptionalInfo: optionalInfo,
-		})
+		mrURL, err := uc.gitlabService.CreateMR(
+			ctx, gitlabcore.MRInfo{
+				Title:          title,
+				ProjectID:      projectID,
+				SourceBranch:   currentBranch,
+				TargetBranch:   targetBranch,
+				MROptionalInfo: optionalInfo,
+			},
+		)
 		if err != nil {
 			slog.Error("CreateMR:", "err", err)
 		}

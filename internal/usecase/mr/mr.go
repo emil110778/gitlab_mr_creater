@@ -12,6 +12,7 @@ type gitServiceI interface {
 	GetRepoURL(_ context.Context) (url string, err error)
 	GetCurrentBranch() (branch string, err error)
 	GetTicketFromBranch(branch string) (string, error)
+	CheckBrunch(branch string) bool
 }
 
 type gitlabServiceI interface {
