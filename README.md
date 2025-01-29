@@ -13,7 +13,7 @@ go install --mod=mod github.com/emildeev/gitlab_helper/gitlab
 
 ### Show all commands
 ```bash
-gilatb --help
+gitlatb --help
 ```
 
 ### Start configure
